@@ -6,8 +6,8 @@ RewriteEngine on
 RewriteRule ^operation/all   operationController.php?get=all [nc,qsa]
 RewriteRule ^operation/([0-9]+)   operationController.php?get=single&id=$1 [nc,qsa]
 RewriteRule ^operation/test   operationController.php?get=test [nc,qsa]
-RewriteRule ^operation/group   operationController.php?put=group [nc,qsa]
-RewriteRule ^operation/people   operationController.php?put=people [nc,qsa]
+RewriteRule ^operation/group   operationController.php?post=group [nc,qsa]
+RewriteRule ^operation/people   operationController.php?post=people [nc,qsa]
 
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 

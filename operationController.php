@@ -9,13 +9,6 @@
 include_once 'config.php';
 include_once 'classes/Operation.php';
 
-header('HTTP/1.0 200 OK');
-header('Content-Type: application/json');
-
-
-
-
-
 if(!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['PHP_AUTH_PW'])){
     header('WWW-Authenticate: Basic realm="LOGIN REQUIRED"');
     header('HTTP/1.0 401 Unauthorized');
@@ -37,9 +30,12 @@ if(checkAuth()){
             $get = $_GET["get"];
         switch($get) {
             case "all":
+                header('HTTP/1.0 200 OK');
+
                 // to handle REST Url /mobile/list/
                 $operations = $operation->getAllOperations();
                 //$operations["alerting_group_name"] = utf8_encode($operations["alerting_group_name"]);
+
                 echo json_encode($operations);
                 break;
 
@@ -61,19 +57,29 @@ if(checkAuth()){
                 $myObj->pw = $_SERVER['PHP_AUTH_PW'];
                 echo json_encode($myObj);
         }
-    }else if($requestMethod == "PUT") {
+    }else if($requestMethod == "POST") {
         $view = "";
-        if(isset($_GET["put"]))
-            $put = $_GET["put"];
-        switch($put) {
+        if(isset($_GET["post"]))
+            $post = $_GET["post"];
+        switch($post) {
             case "group":
                 header('HTTP/1.0 201 CREATED');
-                echo json_encode($operation->putGroupInOperation(1, 1));
+                $input = json_decode(file_get_contents('php://input'), true);
+                $group_id = $input["group_id"];
+                $operation_id = $input["operation_id"];
+                $status = $input["status"];
+
+                echo json_encode($operation->putGroupInOperation($group_id, $operation_id, $status));
                 break;
 
             case "people":
                 header('HTTP/1.0 201 CREATED');
-                echo json_encode($operation->putPeopleInOperation(1, 1));
+                $input = json_decode(file_get_contents('php://input'), true);
+                $people_id = $input["people_id"];
+                $operation_id = $input["operation_id"];
+                $status = $input["status"];
+
+                echo json_encode($operation->putPeopleInOperation(1, 1, $status));
                 break;
         }
 

@@ -119,17 +119,50 @@ class Operation
         }
 
     }
-    function putGroupInOperation($group_id, $operation_id){
-        $myObj->group_id = $group_id;
-        $myObj->operation_id = $operation_id;
-        $myObj->message = "Group was putten in Operation succesfully";
+    function putGroupInOperation($group_id, $operation_id, $status){
+
+        try{
+            $dbh = new PDO($GLOBALS['dsn'], $GLOBALS['db_user'], $GLOBALS['db_password']);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $checkRow = $dbh->prepare("Select * from groupsInOperation WHERE group_id = $group_id and operation_id = $operation_id");
+            $checkRow->execute();
+            $row = $checkRow->rowCount();
+
+            if($row > 0){
+                $stmt = $dbh->prepare("Update groupsInOperation set status = '$status' WHERE group_id = $group_id and operation_id = $operation_id");
+                $stmt->execute();
+                $myObj->message = "Update successful";
+            }else{
+                $stmt = $dbh->prepare("Insert into groupsInOperation (group_id, operation_id, status) VALUES ($group_id, $operation_id, '$status')");
+                $stmt->execute();
+                $myObj->message = "Insert successful";
+            }
+        }catch (PDOException $e){
+            $myObj->message = $e;
+        }
         return $myObj;
     }
 
-    function putPeopleInOperation($operation_id, $people_id){
-        $myObj->people_id = $people_id;
-        $myObj->operation_id = $operation_id;
-        $myObj->message = "People was putten in Operation succesfully";
+    function putPeopleInOperation($operation_id, $people_id, $status){
+        try{
+            $dbh = new PDO($GLOBALS['dsn'], $GLOBALS['db_user'], $GLOBALS['db_password']);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $checkRow = $dbh->prepare("Select * from peopleInOperation WHERE people_id = $people_id and operation_id = $operation_id");
+            $checkRow->execute();
+            $row = $checkRow->rowCount();
+
+            if($row > 0){
+                $stmt = $dbh->prepare("Update peopleInOperation set status = '$status' WHERE people_id = $people_id and operation_id = $operation_id");
+                $stmt->execute();
+                $myObj->message = "Update successful";
+            }else{
+                $stmt = $dbh->prepare("Insert into peopleInOperation (people_id, operation_id, status) VALUES ($people_id, $operation_id, '$status')");
+                $stmt->execute();
+                $myObj->message = "Insert successful";
+            }
+        }catch (PDOException $e){
+            $myObj->message = $e;
+        }
         return $myObj;
     }
 
