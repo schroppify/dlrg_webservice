@@ -91,19 +91,22 @@ class Operation
             $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt = $dbh->prepare("
             SELECT 
+              operation.operation_id,
               operation.alerting_time,
               alertingGroup.name AS alerting_group_name,
               city.name AS city_name,
-              location.name AS location_name
+              location.name AS location_name,
+              operation.end_time
               
             From operation
             INNER JOIN alertingGroup ON alertingGroup.alerting_group_id = operation.alerting_group_id
             INNER JOIN location ON location.location_id = operation.location_id
             INNER JOIN city ON city.city_id = location.city_id  
-                             ");
+            WHERE operation.end_time LIKE '00:00:00'          ");
             $stmt->execute();
             while ($row = $stmt->fetch()) {
                 $operation = array(
+                    "operation_id" => $row['operation_id'],
                     "alerting_time" => $row['alerting_time'],
                     "alerting_group_name" => utf8_encode($row['alerting_group_name']),
                     "city_name" => utf8_encode($row['city_name']),
