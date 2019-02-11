@@ -6,7 +6,7 @@
  * Time: 11:39
  */
 
-include_once '../config.php';
+include_once '../conf/config.php';
 header("Content-Type: text/html; charset=utf-8");
 class Operation
 {

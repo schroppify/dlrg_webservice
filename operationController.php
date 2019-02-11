@@ -6,7 +6,7 @@
  * Time: 10:30
  */
 
-include_once 'config.php';
+include_once 'conf/config.php';
 include_once 'classes/Operation.php';
 
 if(!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['PHP_AUTH_PW'])){
