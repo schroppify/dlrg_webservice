@@ -45,59 +45,55 @@ function getWeatherData($lat, $lon){
         //curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
         $data = curl_exec($ch);
         $data = json_decode(utf8_encode($data));
-        $tempC = $data->main->temp;
-        $windSpeed = $data->wind->speed;
-        if(isset($data->wind->deg)){
-            $windDirection = $data->wind->deg;
-        }else{
-            $windDirection = 'k.A.';
+
+        if(isset($data)) {
+            $tempC = $data->main->temp;
+            $windSpeed = $data->wind->speed;
+            if (isset($data->wind->deg)) {
+                $windDirection = $data->wind->deg;
+            } else {
+                $windDirection = 'k.A.';
+            }
+
+            $weatherId = $data->weather[0]->id;
+            $weatherIcon = $data->weather[0]->icon;
+
+            $weatherStation = $data->name;
+            $updateTime = date('Y-m-d H:i:s');
+
+            try {
+
+                $dbh = new PDO('mysql:host=localhost;dbname=dlrg', 'dlrg_breisgau', 'Atel37*5');
+
+                $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $stmt = $dbh->prepare("
+                Update 
+                location 
+                set 
+                  temp = '$tempC',
+                  windSpeed = '$windSpeed',
+                  windDirection = '$windDirection',
+                  weather_id = '$weatherId',
+                  weatherStation = '$weatherStation',
+                  lastUpdate = '$updateTime',
+                  weatherIcon = '$weatherIcon'
+                WHERE 
+                  latitude like $lat 
+                AND 
+                  longitude like $lon
+                ");
+                $stmt->execute();
+
+            } catch (PDOException $e) {
+                $myObj->message = $e;
+                echo $myObj->message;
+            }
         }
 
-        $weatherId = $data->weather[0]->id;
-        $weatherIcon = $data->weather[0]->icon;
-
-        $weatherStation = $data->name;
-        $updateTime = date('Y-m-d H:i:s');
-        try{
-
-            $dbh = new PDO('mysql:host=localhost;dbname=dlrg', 'dlrg_breisgau', 'Atel37*5');
-
-            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            $stmt = $dbh->prepare("
-            Update 
-              location 
-            set 
-              temp = '$tempC',
-              windSpeed = '$windSpeed',
-              windDirection = '$windDirection',
-              weather_id = '$weatherId',
-              weatherStation = '$weatherStation',
-              lastUpdate = '$updateTime',
-              weatherIcon = '$weatherIcon'
-            WHERE 
-              latitude like $lat 
-            AND 
-              longitude like $lon
-            ");
-            $stmt->execute();
-
-        }catch (PDOException $e){
-            $myObj->message = $e;
-            echo $myObj->message;
+        }catch(Exception $ex) {
+            echo $ex->getMessage();
         }
 
-
-    }catch(Exception $ex) {
-
-        /*  Temperatur
-        *   Windstärke
-         *  Windrichtung
-         *  Niederschlagsart
-         * Niederschlagsbeschreibung
-         * Messstation
-         */
-        echo $ex->getMessage();
-    }
 }
 
