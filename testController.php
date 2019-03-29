@@ -9,21 +9,14 @@
 include_once 'conf/config.php';
 include_once 'classes/Operation.php';
 
-if(!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['PHP_AUTH_PW'])){
-    header('WWW-Authenticate: Basic realm="LOGIN REQUIRED"');
-    header('HTTP/1.0 401 Unauthorized');
-    $status = array('error' => 1, 'message' => 'Access denied 401!');
-    echo json_encode($status);
-    exit;
-}
 
-if(checkAuth()){
+
+
     $requestMethod = $_SERVER['REQUEST_METHOD'];
     $dbConnection = $connectionMessage;
 
     $myObj->dbConnection = $dbConnection;
     $operation = new Operation();
-
     if($requestMethod == 'GET'){
         $get = "";
         if(isset($_GET["get"]))
@@ -52,10 +45,23 @@ if(checkAuth()){
                 $myObj->city = utf8_encode($myObj->city);
                 echo json_encode($myObj);
                 break;
-            case "test";
-                $myObj->user = $_SERVER['PHP_AUTH_USER'];
-                $myObj->pw = $_SERVER['PHP_AUTH_PW'];
-                echo json_encode($myObj);
+
+            case "test":
+
+                header('HTTP/1.0 201 CREATED');
+                $input = json_decode(file_get_contents('php://input'), true);
+                $location_id = $input["location_id"];
+                $message = $input["message"];
+                echo json_encode($operation->newOperation());
+                //echo "test";
+                break;
+
+            case "end":
+                header('HTTP/1.0 201 CREATED');
+                echo json_encode($operation->completeOperation());
+                //echo "end";
+                break;
+
         }
     }else if($requestMethod == "POST") {
         $view = "";
@@ -96,12 +102,7 @@ if(checkAuth()){
     }else{
         header('HTTP/1.0 403 FORBIDDEN');
     }
-}else{
-    header('WWW-Authenticate: Basic realm="LOGIN REQUIRED"');
-    header('HTTP/1.0 401 Unauthorized');
-    $status = array('error' => 2, 'message' => 'Wrong User and/or Password!');
-    echo json_encode($status);
-}
+
 
 
 

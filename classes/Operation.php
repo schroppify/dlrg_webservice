@@ -7,6 +7,7 @@
  */
 
 include_once '../conf/config.php';
+include_once 'Notification.php';
 header("Content-Type: text/html; charset=utf-8");
 class Operation
 {
@@ -163,6 +164,36 @@ class Operation
                 $stmt->execute();
                 $myObj->message = "Insert successful";
             }
+        }catch (PDOException $e){
+            $myObj->message = $e;
+        }
+        return $myObj;
+    }
+
+    function newOperation(){
+        $notification = new Notification();
+        $notification->sendNotification("Alarm", "Bereich Süd - Neuenburg Rheingärten - Person im Wasser", 0);
+
+        try{
+            $dbh = new PDO($GLOBALS['dsn'], $GLOBALS['db_user'], $GLOBALS['db_password']);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $date = date('Y-m-d');
+            $time = date('h:i:s');
+            $stmt = $dbh->prepare("Insert into operation (location_id, alerting_group_id, message, date, alerting_time) VALUES (1, 1, 'Person im Wasser', '$date', '$time' )");
+            $stmt->execute();
+        }catch (PDOException $e){
+            $myObj->message = $e;
+        }
+        return $myObj;
+    }
+
+    function completeOperation(){
+        try{
+            $dbh = new PDO($GLOBALS['dsn'], $GLOBALS['db_user'], $GLOBALS['db_password']);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $time = date('h:i:s');
+            $stmt = $dbh->prepare("Update operation set end_time = '$time' where end_time = '00:00:00'");
+            $stmt->execute();
         }catch (PDOException $e){
             $myObj->message = $e;
         }

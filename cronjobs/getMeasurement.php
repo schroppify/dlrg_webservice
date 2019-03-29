@@ -33,15 +33,17 @@ function getData($name) {
     $dataFiltered = new stdClass();
 
     try {
-        $url = 'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/'.$name.'.json?includeTimeseries=true&includeCurrentMeasurement=true';
-       //echo $url;
+        $url = 'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/' . $name . '.json?includeTimeseries=true&includeCurrentMeasurement=true';
+        //echo $url;
         $ch = curl_init();
         $timeout = 5;
-        curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         //curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
         $data = curl_exec($ch);
         $data = json_decode(utf8_encode($data));
+
+        if(isset($data->uuid)){
 
         $dataFiltered->uuid = $data->uuid;
         $dataFiltered->name = $data->shortname;
@@ -51,7 +53,7 @@ function getData($name) {
         $dataFiltered->trend = $data->timeseries[0]->currentMeasurement->trend;
 
         //var_dump($data);
-        try{
+        try {
 
             $dbh = new PDO('mysql:host=localhost;dbname=dlrg', 'dlrg_breisgau', 'Atel37*5');
             $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -66,10 +68,11 @@ function getData($name) {
             $stmt->execute();
             $dataFiltered = null;
 
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             $myObj->message = $e;
             echo $myObj->message;
         }
+    }
 
     } catch(Exception $ex) {
          echo $ex->getMessage();

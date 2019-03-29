@@ -46,7 +46,7 @@ function getWeatherData($lat, $lon){
         $data = curl_exec($ch);
         $data = json_decode(utf8_encode($data));
 
-        if(isset($data)) {
+        if(isset($data->main)) {
             $tempC = $data->main->temp;
             $windSpeed = $data->wind->speed;
             if (isset($data->wind->deg)) {
