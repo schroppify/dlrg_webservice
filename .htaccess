@@ -11,6 +11,7 @@ RewriteRule ^operation/group   operationController.php?post=group [nc,qsa]
 RewriteRule ^group/([0-9]+)   groupController.php?post=group&id=$1 [nc,qsa]
 RewriteRule ^group/people/([0-9]+)  groupController.php?get=people&id=$1 [nc,qsa]
 RewriteRule ^operation/people   operationController.php?post=people [nc,qsa]
+RewriteRule ^user/checkAuth   userController.php?get=auth [nc,qsa]
 
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 
