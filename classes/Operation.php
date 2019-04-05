@@ -29,7 +29,8 @@ class Operation
               alertingGroup.name AS alerting_group_name,
               location.location_id,
               location.latitude,
-              location.longitude
+              location.longitude,
+              location.temp
             From operation
             INNER JOIN location ON location.location_id = operation.location_id
             INNER JOIN city ON city.city_id = location.city_id
@@ -46,6 +47,7 @@ class Operation
                 $myObj->message = $row['message'];
                 $myObj->lat = $row['latitude'];
                 $myObj->long = $row['longitude'];
+                $myObj->temp = $row['temp'];
 
                 $stmt2 = $dbh->prepare("
             SELECT 
