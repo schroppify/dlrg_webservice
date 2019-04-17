@@ -8,69 +8,49 @@
 
 include_once '../conf/config.php';
 header("Content-Type: text/html; charset=utf-8");
-class Group
+
+class Message
+
 {
-    function getPeople($id){
+    public $message_id;
+    public $subject;
+    public $body;
+    public $datetime;
+
+   static function getMessages(){
 
         try{
             $dbh = new PDO($GLOBALS['dsn'], $GLOBALS['db_user'], $GLOBALS['db_password']);
             $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt = $dbh->prepare("
-            Select prename, lastname, people_id from dlrg.people WHERE group_id = $id ");
+            Select message_id, subject, body, datetime from dlrg.messages order by datetime desc limit 5");
             $stmt->execute();
             $row = $stmt->rowCount();
 
             if($row > 0){
 
+                $messageList = array();
                 while ($row = $stmt->fetch()) {
 
-                        $myObj->people_id = $row['people_id'];
-                        $myObj->prename = $row['prename'];
-                        $myObj->lastname = $row['lastname'];
+                    $message = new Message();
+                    $message->message_id = $row['message_id'];
+                    $message->subject = $row['subject'];
+                    $message->body = utf8_encode($row['body']);
+                    $message->datetime = $row['datetime'];
 
+                    $messageList[] = $message;
 
-
-            $stmt2 = $dbh->prepare("
-            SELECT 
-             qualification.qualification_id,      
-             qualification.name,
-             qualification.number
-              
-            From 
-              peopleToQualification
-            INNER JOIN qualification on peopleToQualification.qualification_id = qualification.qualification_id
-            where 
-            peopleToQualification.people_id=:id");
-
-                $stmt2->bindParam(':id', $row['people_id']);
-                $stmt2->execute();
-
-                while ($row2 = $stmt2->fetch()) {
-                    $object[] = array(
-                        "qualification_id" => $row2['qualification_id'],
-                        "name" => $row2['name'],
-                        "number" => $row2['number']
-                    );
-                    $qualifications[]= $object;
-                    $object = null;
-                }
-                $myObj->qualifications = $qualifications;
-
-
-
-
-                    $peopleList[] = $myObj;
-
+                    $body = $row['body'];
 
                 }
-                return $peopleList;
+                return $messageList;
 
             }else{
 
-                $myObj->message = "No People";
+                return $myObj->message = "No Messages";
             }
         }catch (PDOException $e){
-            $myObj->message = $e;
+            return $myObj->message = $e;
         }
 
 

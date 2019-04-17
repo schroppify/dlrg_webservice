@@ -7,7 +7,7 @@
  */
 
 include_once 'conf/config.php';
-include_once 'classes/Operation.php';
+include_once 'classes/Message.php';
 
 if(!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['PHP_AUTH_PW'])){
     header('WWW-Authenticate: Basic realm="LOGIN REQUIRED"');
@@ -22,20 +22,19 @@ if(checkAuth()){
     $dbConnection = $connectionMessage;
 
     $myObj->dbConnection = $dbConnection;
-    $operation = new Operation();
+
 
     if($requestMethod == 'GET'){
         $get = "";
         if(isset($_GET["get"]))
             $get = $_GET["get"];
         switch($get) {
-            case "auth":
+            case "messages":
                 header('HTTP/1.0 200 OK');
 
+                $messages = Message::getMessages();
 
-
-                $status = array('error' => 0, 'message' => 'OK');
-                echo json_encode($status);
+                echo json_encode($messages);
 
                 break;
 
