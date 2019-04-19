@@ -34,7 +34,7 @@ class Message
 
                     $message = new Message();
                     $message->message_id = $row['message_id'];
-                    $message->subject = $row['subject'];
+                    $message->subject = utf8_encode($row['subject']);
                     $message->body = utf8_encode($row['body']);
                     $message->datetime = $row['datetime'];
 

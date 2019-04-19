@@ -99,7 +99,8 @@ class Operation
               alertingGroup.name AS alerting_group_name,
               city.name AS city_name,
               location.name AS location_name,
-              operation.end_time
+              operation.end_time,
+              operation.message
               
             From operation
             INNER JOIN alertingGroup ON alertingGroup.alerting_group_id = operation.alerting_group_id
@@ -113,7 +114,8 @@ class Operation
                     "alerting_time" => $row['alerting_time'],
                     "alerting_group_name" => utf8_encode($row['alerting_group_name']),
                     "city_name" => utf8_encode($row['city_name']),
-                    "location_name" => utf8_encode($row['location_name'])
+                    "location_name" => utf8_encode($row['location_name']),
+                    "message" =>utf8_encode($row['message'])
                 );
                 $operations[] = $operation;
             }
