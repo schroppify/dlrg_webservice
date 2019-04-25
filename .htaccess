@@ -12,7 +12,12 @@ RewriteRule ^group/([0-9]+)   groupController.php?post=group&id=$1 [nc,qsa]
 RewriteRule ^group/people/([0-9]+)  groupController.php?get=people&id=$1 [nc,qsa]
 RewriteRule ^operation/people   operationController.php?post=people [nc,qsa]
 RewriteRule ^user/checkAuth   userController.php?get=auth [nc,qsa]
+RewriteRule ^user/qualifications/([0-9]+)   userController.php?get=qualifications&id=$1 [nc,qsa]
+RewriteRule ^user/qualifications   userController.php?post=qualification [nc,qsa]
+RewriteRule ^user/retrainings/([0-9]+)   userController.php?get=retrainings&id=$1 [nc,qsa]
 RewriteRule ^messages   messageController.php?get=messages [nc,qsa]
+RewriteRule ^events   datesController.php?get=dates [nc,qsa]
+
 
 
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]

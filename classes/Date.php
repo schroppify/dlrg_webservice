@@ -9,50 +9,64 @@
 include_once '../conf/config.php';
 header("Content-Type: text/html; charset=utf-8");
 
-class Message
+class Date
 
 {
-    public $message_id;
-    public $subject;
-    public $body;
-    public $datetime;
+    public $event_id;
+    public $title;
+    public $startDate;
+    public $startTime;
+    public $endDate;
+    public $endTime;
+    public $organizer;
+    public $category;
+    public $location;
 
-   static function getMessages(){
+   static function getDates(){
 
         try{
             $dbh = new PDO($GLOBALS['dsn'], $GLOBALS['db_user'], $GLOBALS['db_password']);
             $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt = $dbh->prepare("
-            Select message_id, subject, body, datetime from dlrg.messages order by datetime desc limit 5");
+            Select date_id, startDate, startTime, endDate, endTime, organizer, category, location, title from dlrg.dates  ");
             $stmt->execute();
             $row = $stmt->rowCount();
 
             if($row > 0){
 
-                $messageList = array();
+                $dateList = array();
                 while ($row = $stmt->fetch()) {
 
-                    $message = new Message();
-                    $message->message_id = $row['message_id'];
-                    $message->subject = utf8_encode($row['subject']);
-                    $message->body = utf8_encode($row['body']);
+                    $date = new Date();
+                    $date->event_id = $row['date_id'];
+                    $date->title = utf8_encode($row['title']);
 
-                    $datetime = $row['datetime'];
-                    $datetime = new DateTime($datetime);
-                    $datetime = $datetime->format('d.m.Y H:i');
+                    $startDate = $row['startDate'];
+                    $startDate = new DateTime($startDate);
+                    $startDate = $startDate->format('d.m.Y');
 
-                    $message->datetime = $datetime;
+                    $date->startDate = $startDate;
+                    $date->startTime = $row['startTime'];
 
-                    $messageList[] = $message;
+                    $endDate = $row['endDate'];
+                    $endDate = new DateTime($endDate);
+                    $endDate = $endDate->format('d.m.Y');
 
-                    $body = $row['body'];
+                    $date->endDate = $endDate;
+                    $date->endTime = $row['endTime'];
+                    $date->organizer = utf8_encode($row['organizer']);
+                    $date->category = utf8_encode($row['category']);
+                    $date->location = utf8_encode($row['location']);
+
+                    $dateList[] = $date;
+
 
                 }
-                return $messageList;
+                return $dateList;
 
             }else{
 
-                return $myObj->message = "No Messages";
+                return $myObj->message = "No Dates";
             }
         }catch (PDOException $e){
             return $myObj->message = $e;

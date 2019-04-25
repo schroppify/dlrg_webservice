@@ -7,7 +7,7 @@
  */
 
 include_once 'conf/config.php';
-include_once 'classes/User.php';
+include_once 'classes/Date.php';
 
 if(!isset($_SERVER['PHP_AUTH_USER']) and !isset($_SERVER['PHP_AUTH_PW'])){
     header('WWW-Authenticate: Basic realm="LOGIN REQUIRED"');
@@ -23,39 +23,23 @@ if(checkAuth()){
 
     $myObj->dbConnection = $dbConnection;
 
+
     if($requestMethod == 'GET'){
         $get = "";
         if(isset($_GET["get"]))
             $get = $_GET["get"];
         switch($get) {
-            case "auth":
+            case "dates":
                 header('HTTP/1.0 200 OK');
 
+                $dates = Date::getDates();
 
 
-                $status = array('error' => 0, 'message' => 'OK');
-                echo json_encode($status);
+                echo json_encode($dates);
 
                 break;
 
-            case "qualifications":
-                header('HTTP/1.0 200 OK');
 
-
-               $userData = User::getQualifications($_GET['id']);
-
-
-                echo json_encode($userData);
-                break;
-            case "retrainings":
-                header('HTTP/1.0 200 OK');
-
-
-                $userData = User::getRetrainings($_GET['id']);
-
-
-                echo json_encode($userData);
-                break;
         }
     }else if($requestMethod == "POST") {
         $view = "";
@@ -63,24 +47,10 @@ if(checkAuth()){
             $post = $_GET["post"];
 
 
-        switch($post) {
-            case "qualification":
-                header('HTTP/1.0 201 CREATED');
-                $input = json_decode(file_get_contents('php://input'), true);
-
-                $myObj->qualification_id = $input["qualification_id"];
-                $myObj->people_id = $input["people_id"];
-                $myObj->exam_date = $input["exam_date"];
-                $myObj->exam_number = $input["exam_number"];
-                $myObj->exam_location = $input["exam_location"];
-                $myObj->examiner = $input["examiner"];
-                $myObj->examiner_number= $input["examiner_number"];
 
 
-                echo json_encode(User::postQualification($myObj));
-                break;
 
-        }
+
 
     }else{
         header('HTTP/1.0 403 FORBIDDEN');
